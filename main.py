@@ -17,25 +17,26 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-
 from page_login import LoginIn
 
-options = webdriver.ChromeOptions()
-options.add_experimental_option("detach",True)
-# options.add_argument('--headless')
 base_url = 'https://www.saucedemo.com/'
 
 
 # создаем класс который:
 class AutoTest:
-    # создает экземпляр драйвера
+
     def __init__(self):
+        # создает и настраивает экземпляр драйвера
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option("detach",True)
+        # options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
 
-    def driver_start(self, link):
-        # запускает браузер на весь экран
+    def test_start(self, link):
+        # запускает драйвер по указанной ссылке
         self.driver.get(link)
         self.driver.maximize_window()
+        # производит авторизацию
         login_in = LoginIn(self.driver)
         login_in.authorization(login_name = 'standard_user', login_password = 'secret_sauce')
 
@@ -64,6 +65,6 @@ class AutoTest:
 
 # вызываем экземпляр класса и методы
 test = AutoTest()
-test.driver_start(base_url)
+test.test_start(base_url)
 test.business_process()
 test.test_end()
