@@ -11,7 +11,7 @@ import time
 from selenium import webdriver
 # from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.keys import Keys
 # from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -19,22 +19,21 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from page_login import LoginIn
 
-base_url = 'https://www.saucedemo.com/'
-
 
 # создаем класс который:
 class AutoTest:
 
-    def __init__(self):
-        # создает и настраивает экземпляр драйвера
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option("detach",True)
-        # options.add_argument('--headless')
-        self.driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
+    def __init__(self, link, headless=False):
+        self.options = webdriver.ChromeOptions()
+        self.options.add_experimental_option("detach", True)
+        if headless:
+            self.options.add_argument('--headless')
+        self.driver = webdriver.Chrome(options=self.options, service=ChromeService(ChromeDriverManager().install()))
+        self.base_url = link
 
-    def test_start(self, link):
+    def test_start(self):
         # запускает драйвер по указанной ссылке
-        self.driver.get(link)
+        self.driver.get(self.base_url)
         self.driver.maximize_window()
         # производит авторизацию
         login_in = LoginIn(self.driver)
@@ -59,12 +58,12 @@ class AutoTest:
 
 
     # завершает тест и закрывает браузер
-    def test_end(self):
-        time.sleep(5)
+    def test_end(self, seconds=5):
+        time.sleep(seconds)
         self.driver.quit()
 
 # вызываем экземпляр класса и методы
-test = AutoTest()
-test.test_start(base_url)
-test.business_process()
+base_url = 'https://www.saucedemo.com/'
+test = AutoTest(base_url, headless=False)
+test.test_start()
 test.test_end()
